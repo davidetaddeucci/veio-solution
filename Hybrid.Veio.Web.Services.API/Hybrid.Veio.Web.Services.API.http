@@ -1,0 +1,6 @@
+@Hybrid.Veio.Web.Services.API_HostAddress = http://localhost:5149
+
+GET {{Hybrid.Veio.Web.Services.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
