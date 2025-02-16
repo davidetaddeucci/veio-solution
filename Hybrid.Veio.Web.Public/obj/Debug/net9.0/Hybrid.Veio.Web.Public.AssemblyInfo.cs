@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Hybrid.Veio.Web.Public")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d3362f7642d19bbc4eb38a91d54a02cc6ea66a50")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2cb4edbe183cdebe2f4ea603f603b50f32772ca1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Hybrid.Veio.Web.Public")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Hybrid.Veio.Web.Public")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
