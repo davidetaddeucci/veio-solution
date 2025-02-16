@@ -398,3 +398,15 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+# Blazor Project specific
+**/Hybrid.Veio.Web.Public/wwwroot/css/**
+**/Hybrid.Veio.Web.Public/wwwroot/assets/**
+**/Hybrid.Veio.Web.Public/wwwroot/lib/**
+**/Hybrid.Veio.Web.Public/_keenthemes/**
+**/Hybrid.Veio.Web.Public/Shared/Partials/Widgets/**
+
+**/Hybrid.Veio.Web.Reserved/wwwroot/css/**
+**/Hybrid.Veio.Web.Reserved/wwwroot/assets/**
+**/Hybrid.Veio.Web.Reserved/wwwroot/lib/**
+**/Hybrid.Veio.Web.Reserved/_keenthemes/**
+**/Hybrid.Veio.Web.Reserved/Shared/Partials/Widgets/**
