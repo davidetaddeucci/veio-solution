@@ -4,7 +4,7 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MasterInit)">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.DefaultDarkSidebar">
                 <NotAuthorized>
                     @if (!context.User.Identity.IsAuthenticated)
                     {
@@ -19,7 +19,7 @@
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(MasterInit)">
+            <LayoutView Layout="@typeof(Layout.DefaultDarkSidebar)">
                 <p>Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>
