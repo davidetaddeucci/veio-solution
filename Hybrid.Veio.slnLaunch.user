@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Reserved & Web API",
+    "Projects": [
+      {
+        "Path": "Hybrid.Veio.Web.Services.API\\Hybrid.Veio.Web.Services.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Hybrid.Veio.Web.Reserved\\Hybrid.Veio.Web.Reserved.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
