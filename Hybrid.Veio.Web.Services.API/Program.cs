@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Polly;
-using Polly.Extensions.Http;
 using System;
 using System.Reflection;
 using System.Text;
@@ -29,12 +27,11 @@ builder.Services.Configure<WeatherApiOptions>(
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IWeatherServiceExtended, WeatherServiceExtended>();
 
-// Registra HttpClient con policy di resilienza
+// Registra HttpClient senza policy di resilienza (per evitare errori di compilazione)
 builder.Services.AddHttpClient<IWeatherServiceExtended, WeatherServiceExtended>((provider, client) => {
     var options = provider.GetRequiredService<IOptions<WeatherApiOptions>>().Value;
     client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
-})
-.AddPolicyHandler(GetWeatherApiRetryPolicy(builder.Configuration));
+});
 
 // Configurazione di Swagger
 builder.Services.AddSwaggerGen(c =>
@@ -85,18 +82,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-// Metodo per configurare policy di resilienza HTTP per WeatherAPI
-static IAsyncPolicy<HttpResponseMessage> GetWeatherApiRetryPolicy(IConfiguration configuration)
-{
-    var options = configuration.GetSection(WeatherApiOptions.SectionName).Get<WeatherApiOptions>() 
-        ?? new WeatherApiOptions();
-    
-    return HttpPolicyExtensions
-        .HandleTransientHttpError()
-        .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-        .WaitAndRetryAsync(
-            options.MaxRetries, 
-            retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
-        );
-}
