@@ -1,8 +1,12 @@
 using Hybrid.Veio.Web.Services.API.Data;
+using Hybrid.Veio.Web.Services.API.Services.Weather;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Polly;
+using Polly.Extensions.Http;
 using System;
 using System.Reflection;
 using System.Text;
@@ -13,17 +17,37 @@ using Syncfusion.Licensing;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
-
 // Registra AppDbContext con la connessione SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
-
-
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configurazione di WeatherAPI
+builder.Services.Configure<WeatherApiOptions>(
+    builder.Configuration.GetSection(WeatherApiOptions.SectionName));
+
+// Registra i servizi WeatherAPI
+builder.Services.AddScoped<IWeatherService, WeatherService>();
+builder.Services.AddScoped<IWeatherServiceExtended, WeatherServiceExtended>();
+
+// Registra HttpClient con policy di resilienza
+builder.Services.AddHttpClient<IWeatherServiceExtended, WeatherServiceExtended>((provider, client) => {
+    var options = provider.GetRequiredService<IOptions<WeatherApiOptions>>().Value;
+    client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+})
+.AddPolicyHandler(GetWeatherApiRetryPolicy(builder.Configuration));
+
 // Configurazione di Swagger
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hybrid.Veio.API", Version = "v1" });
+    
+    // Aggiungi documentazione XML per gli endpoint meteo
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
 });
 
 builder.Services.AddControllers();
@@ -61,3 +85,18 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Metodo per configurare policy di resilienza HTTP per WeatherAPI
+static IAsyncPolicy<HttpResponseMessage> GetWeatherApiRetryPolicy(IConfiguration configuration)
+{
+    var options = configuration.GetSection(WeatherApiOptions.SectionName).Get<WeatherApiOptions>() 
+        ?? new WeatherApiOptions();
+    
+    return HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+        .WaitAndRetryAsync(
+            options.MaxRetries, 
+            retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+        );
+}
