@@ -167,7 +167,7 @@ public class WeatherController : ControllerBase
     /// <summary>
     /// API di esempio per compatibilità - restituisce dati meteo casuali
     /// </summary>
-    [HttpGet(Name = "GetWeatherForecast")]
+    [HttpGet("legacy")]
     public IEnumerable<WeatherForecast> Get()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
